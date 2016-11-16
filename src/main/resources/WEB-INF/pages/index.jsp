@@ -4,9 +4,13 @@
     <title>Main Page</title>
 </head>
 <body>
-<form action="/work2" method="POST">
-    <input type="text" name="login">
-    <input type="submit" value="OK!">
+<form action="/page1" method="POST">
+    Login:<input type="text" name="login"><br>
+    Password:<input type="password" name="password"><br>
+    <input type="submit" value="Enter!">
+</form>
+<form action="/registration" method="POST">
+    <input type="submit" value="Registration">
 </form>
 
 </body>

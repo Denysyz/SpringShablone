@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,33 +23,56 @@ import java.util.Map;
 @RequestMapping("/")
 public class MyC {
 
-    public ArrayList<String > message = new ArrayList<String>();
-    public Map<String, String > ipLog = new HashMap<String, String>();
-
-    public String login;
-    public String ip;
+    DataBase db = new DataBase();
 
     @RequestMapping("/")
     public String Index() {
         return "index";
     }
 
-    @RequestMapping("/work2")
-    public String Inde(@RequestParam("login") String login) {
-        this.login = login;
-        return "test";
+    @RequestMapping("/page1")
+    public String page(Model model, @RequestParam("login") String login, @RequestParam("password") String password) {
+
+        String res ="index";
+        try {
+            PreparedStatement ps = db.createCon().prepareStatement("SELECT * FROM idPass");
+            PreparedStatement ps2 = db.createCon().prepareStatement("SELECT * FROM param");
+            ResultSet rs = ps.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+            while (rs.next()) {
+                System.out.println(1);
+                if (rs.getString(1).equals(login) & rs.getString(2).equals(password)){
+                    System.out.println(2);
+                    while (rs2.next()){
+                        System.out.println(3);
+                        if(rs2.getString(1).equals(login)){
+                            System.out.println(4);
+                            model.addAttribute("namefull", rs2.getString(3) + " " + rs2.getString(2));
+                            res = "page";
+                        }
+                    }
+
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
-
-    @RequestMapping(value = "/work", method = RequestMethod.POST)
-    public String onIndex(Model model, @RequestParam("mes") String mes) {
-        String temp = login + ": " + mes;
-        message.add(temp);
-        model.addAttribute("arr", message);
-
-
-        return "test";
+    @RequestMapping("/registration")
+    public String registr() {
+        return "registration";
     }
 
+    @RequestMapping("/registration2")
+    public String registr2(@RequestParam("login") String login, @RequestParam("password") String password,
+                           @RequestParam("name") String name, @RequestParam("surname") String surname,
+                           @RequestParam("age") String age, @RequestParam("country") String country) {
+        db.addLogin(login, password);
+        db.addParam(login, name, surname, age, country);
+        return "index";
 
+
+    }
 }
